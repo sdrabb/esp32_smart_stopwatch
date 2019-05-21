@@ -94,7 +94,7 @@ void task_ssd1306(void *pvParameter){
 				// set font and write hello world
 				u8g2_ClearBuffer(&u8g2);
 				u8g2_SetFont(&u8g2, u8g2_font_timR14_tf);
-				u8g2_DrawStr(&u8g2, 2,17,"lap's time:");
+				u8g2_DrawStr(&u8g2, 2,17,"lap time:");
 				u8g2_DrawStr(&u8g2, 2,34,str_to_print);
 				u8g2_SendBuffer(&u8g2);
 				break;
