@@ -6,37 +6,22 @@
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 
-esp_err_t event_handler(void *ctx, system_event_t *event)
-{
-    return ESP_OK;
-}
+#include "u8g2_esp32_hal.h"
+#include "hc_sr04.h"
+#include "ssd1306.h"
+#include "timer.h"
+#include "global.h"
 
-void app_main(void)
-{
+
+void app_main(void){
+
     nvs_flash_init();
-    tcpip_adapter_init();
-    ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
-    ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
-    wifi_config_t sta_config = {
-        .sta = {
-            .ssid = CONFIG_ESP_WIFI_SSID,
-            .password = CONFIG_ESP_WIFI_PASSWORD,
-            .bssid_set = false
-        }
-    };
-    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &sta_config) );
-    ESP_ERROR_CHECK( esp_wifi_start() );
-    ESP_ERROR_CHECK( esp_wifi_connect() );
 
-    gpio_set_direction(GPIO_NUM_4, GPIO_MODE_OUTPUT);
-    int level = 0;
-    while (true) {
-        gpio_set_level(GPIO_NUM_4, level);
-        level = !level;
-        vTaskDelay(300 / portTICK_PERIOD_MS);
-    }
+    // init sempahore
+    sem_timer = xSemaphoreCreateBinary();
+
+    xTaskCreate(task_hcsc04, "task_hcsc04", 2048, NULL, 1, NULL );
+    xTaskCreate(task_ssd1306, "task_ssd1306", 2048, NULL, 1, NULL );
+    //xTaskCreate(task_timer, "task_timer", 2048, NULL, 1, NULL );
 }
 
